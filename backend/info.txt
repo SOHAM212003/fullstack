@@ -1,0 +1,10 @@
+"""
+models\sustainability_model.py
+models\yield_predictor.py
+
+this two files are for create .pkl file (which is grater than 50MB thats why it is not full uploaded.)
+
+for this 1st :-> run .py file
+         2nd :-> all agents files -> database -> then main
+
+"""

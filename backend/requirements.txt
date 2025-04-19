@@ -1,0 +1,8 @@
+Flask
+Flask-CORS
+pandas
+numpy
+scikit-learn
+joblib
+gunicorn
+sqlite3  # Built-in with Python; no pip install needed
