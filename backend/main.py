@@ -32,12 +32,13 @@ def run_system_with_data(farm_data):
         weather_comment
     ))
 
+    # Prepare the result
     result = {
-        "predicted_yield": round(predicted_yield, 2),
-        "market_price": round(market_data['price'], 2),
-        "demand_index": round(market_data['demand'], 2),  # ✅ updated key
-        "sustainability_score": round(sustainability_score, 2),
-        "weather_comment": weather_comment
+        "predicted_yield": float(predicted_yield),  # Convert np.float64 to float
+        "market_price": float(market_data['price']),  # Convert np.float64 to float
+        "demand_index": float(market_data['demand']),  # Convert np.float64 to float
+        "sustainability_score": float(sustainability_score),  # Convert np.float64 to float
+        "weather_comment": weather_comment  # String
     }
 
     print("✅ Prediction result:", result)

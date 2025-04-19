@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
-function FormPage() {
-  const [formData, setFormData] = useState({
-    farm_id: '',
-    soil_ph: '',
-    soil_moisture: '',
-    temperature: '',
-    rainfall: '',
-    crop_type: '',
-    fertilizer_usage: '',
-    pesticide_usage: '',
-  });
+const initialForm = {
+  farm_id: '',
+  soil_ph: '',
+  soil_moisture: '',
+  temperature: '',
+  rainfall: '',
+  crop_type: '',
+  fertilizer_usage: '',
+  pesticide_usage: '',
+};
 
-  const navigate = useNavigate();
+const FarmingPredictor = () => {
+  const [formData, setFormData] = useState(initialForm);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,18 +24,47 @@ function FormPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch('http://127.0.0.1:5000/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const result = await response.json();
-      navigate('/results', { state: { result } });
+      const data = await response.json();
+      console.log("Backend response:", data); // Debugging log
+      setResult(data);
     } catch (error) {
       console.error('Error fetching prediction:', error);
     }
+    setLoading(false);
   };
+
+  const handleReset = () => {
+    setResult(null);
+    setFormData(initialForm);
+  };
+
+  if (result) {
+    console.log("Received result:", result); // Debugging log
+
+    const predictedYield = parseFloat(result.predicted_yield) || 0;
+    const sustainabilityScore = parseFloat(result.sustainability_score) || 0;
+    const marketPrice = parseFloat(result.market_price) || 0;
+    const demandIndex = parseFloat(result.demand_index) || 0;
+    const weatherComment = result.weather_comment || 'N/A';
+
+    return (
+      <div>
+        <h3>Prediction Results</h3>
+        <p>Predicted Yield: {predictedYield}t</p>
+        <p>Sustainability Score: {sustainabilityScore}%</p>
+        <p>Market Price: ₹{marketPrice.toFixed(2)}</p>
+        <p>Demand Index: {demandIndex.toFixed(2)}</p>
+        <p>Weather Insight: {weatherComment}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -57,13 +89,14 @@ function FormPage() {
           <button
             type="submit"
             className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-all duration-300"
+            disabled={loading}
           >
-            Predict
+            {loading ? 'Predicting...' : 'Predict'}
           </button>
         </div>
       </form>
     </div>
   );
-}
+};
 
-export default FormPage;
+export default FarmingPredictor;
